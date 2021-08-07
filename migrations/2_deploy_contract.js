@@ -1,5 +1,5 @@
-var HelloWorld = artifacts.require("HelloWorld");
-module.exports = function(deployer) {
-  deployer.deploy(HelloWorld, "Hallo");
-  // add contracts to deploy here
+var Contract = artifacts.require("TestERC20");
+
+module.exports = async function (deployer) {
+  await deployer.deploy(Contract, 'Test', 'Test', '10000000000000000000000');
 };
