@@ -2,7 +2,8 @@
   "dependencies": {
     "@openzeppelin/contracts": "4.2.0",
     "@truffle/hdwallet-provider": "^1.4.3",
-    "truffle-hdwallet-provider": "^1.0.6"
+    "truffle-hdwallet-provider": "^1.0.6",
+    "web3": "^1.5.1"
   },
   "name": "MaxFlow's truffle enviroment",
   "description": "Please setup .secret with your mnemonic before running, and add that to .gitignore",

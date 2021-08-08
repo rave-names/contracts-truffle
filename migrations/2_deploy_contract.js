@@ -1,6 +1,5 @@
-// migrations/2_deploy.js
-const SimpleToken = artifacts.require('SimpleToken');
+const SimpleERC20 = artifacts.require('SimpleERC20');
 
 module.exports = async function (deployer) {
-  await deployer.deploy(SimpleToken, 'SimpleToken', 'SIM', '10000000000000000000000');
+  await deployer.deploy(SimpleERC20);
 };
