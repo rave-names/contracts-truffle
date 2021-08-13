@@ -17,13 +17,11 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
-
+require("dotenv").config();
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-const fs = require('fs');
-const mnemonic = fs.readFileSync(".secret").toString().trim();
-
 module.exports = {
+
   /**
    * Networks define how you connect to your ethereum client and let you set the
    * defaults web3 uses to send transactions. If you don't specify one truffle
@@ -41,20 +39,11 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-    // development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-    //  network_id: "*",       // Any network (default: none)
-    // },
-    // Another network with more advanced options...
-    // advanced: {
-    // port: 8777,             // Custom port
-    // network_id: 1342,       // Custom network
-    // gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
-    // gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
-    // from: <address>,        // Account to send txs from (default: accounts[0])
-    // websocket: true        // Enable EventEmitter interface for web3 (default: false)
-    // },
+    development: {
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 8545,            // Standard Ethereum port (default: none)
+      network_id: "*",       // Any network (default: none)
+    },
     // Useful for deploying to a public network.
     // NB: It's important to wrap the provider as a function.
     // ropsten: {
@@ -72,11 +61,36 @@ module.exports = {
     // production: true    // Treats this network as if it was a public net. (default: false)
     // }
 
+    // Binance Test Net
+    BNBTest: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://data-seed-prebsc-2-s1.binance.org:8545`);
+      },
+      network_id: 97,
+      gas: 4500000,
+      confirmations: 5,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Binance Smart Chain
+    BNB: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://bsc-dataseed1.binance.org`);
+      },
+      network_id: 56,
+      confirmations: 5,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Ethereum, Rinkeby
     Rinkeby: {
-      provider: function() { 
-       return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/ff1cde6002f84a9f9b1720528ce6e03c");
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, "https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}");
       },
       network_id: 4,
+      confirmations: 1,
       gas: 4500000,
       gasPrice: 10000000000,
     }
@@ -92,16 +106,23 @@ module.exports = {
     solc: {
       version: "^0.8.0",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-      //settings: {          // See the solidity docs for advice about optimization and evmVersion
-      //  optimizer: {
-      //    enabled: false,
-      //    runs: 200
-      //  }
+      settings: {          // See the solidity docs for advice about optimization and evmVersion
+        optimizer: {
+          enabled: false,
+          runs: 200
+        }
       //  evmVersion: "byzantium"
-      //}
+      }
     }
   },
 
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    etherscan: process.env.ETHERSCAN_API_KEY,
+    bscscan: process.env.BSCSCAN_API_KEY
+  }
   // Truffle DB is currently disabled by default; to enable it, change enabled:
   // false to enabled: true. The default storage location can also be
   // overridden by specifying the adapter settings, as shown in the commented code below.
@@ -109,7 +130,7 @@ module.exports = {
   // NOTE: It is not possible to migrate your contracts to truffle DB and you should
   // make a backup of your artifacts to a safe location before enabling this feature.
   //
-  // After you backed up your artifacts you can utilize db by running migrate as follows: 
+  // After you backed up your artifacts you can utilize db by running migrate as follows:
   // $ truffle migrate --reset --compile-all
   //
   // db: {
