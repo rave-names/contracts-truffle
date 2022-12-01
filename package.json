@@ -1,24 +1,15 @@
 {
   "dependencies": {
-    "@openzeppelin/contracts": "^4.2.0",
-    "@truffle/hdwallet-provider": "^1.4.3",
-    "@trufflesuite/web3-provider-engine": "^15.0.13-1",
-    "dotenv": "^10.0.0",
-    "node-fetch": "^2.6.1",
-    "truffle-plugin-verify": "^0.5.11",
-    "web3": "^1.5.1"
+    "@openzeppelin/contracts": "^4.7.3",
+    "@truffle/hdwallet-provider": "^2.1.1",
+    "dotenv": "^16.0.3"
   },
-  "name": "MaxFlow-truffle-enviroment",
-  "description": "Please setup .secret with your mnemonic before running, and add that to .gitignore",
-  "version": "0.1.0",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.7.3",
+    "@openzeppelin/truffle-upgrades": "^1.17.0",
+    "chai": "^4.3.6",
+    "truffle": "^5.6.4",
+    "truffle-plugin-stdjsonin": "github:mhrsalehi/truffle-plugin-stdjsonin",
+    "truffle-plugin-verify": "^0.5.33"
+  }
 }
