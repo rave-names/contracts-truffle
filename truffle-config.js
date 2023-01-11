@@ -68,128 +68,69 @@ module.exports = {
     // production: true    // Treats this network as if it was a public net. (default: false)
     // }
 
+    // Infura Endpoints (requires INFURA_API_KEY in .env)
+
     // Ethereum
-    Ethereum: {
+    ETH: {
       provider: function() {
         return new HDWalletProvider(process.env.MNEMONIC, `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
       },
       network_id: 1,
-      confirmations: 5,
-      timeoutBlocks: 25,
+      confirmations: 2,
+      timeoutBlocks: 200,
       skipDryRun: true
     },
 
-    // Ethereum, Rinkeby
-    Rinkeby: {
-      provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`);
-      },
-      network_id: 4,
-      confirmations: 5,
-      timeoutBlocks: 25,
-      skipDryRun: true
-    },
-
-    // Ethereum, Goerli
-    Goerli: {
+    // Ethereum Testnet, Goerli
+    ETHTest: {
       provider: function() {
         return new HDWalletProvider(process.env.MNEMONIC, `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`);
       },
       network_id: 5,
-      confirmations: 5,
-      timeoutBlocks: 25,
-      skipDryRun: true
-    },
-
-    // Op on Kovan
-    OpTestK:{
-      provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, `https://kovan.optimism.io`);
-      },
-      network_id: 69,
-      confirmations: 5,
-      timeoutBlocks: 25,
-      skipDryRun: true
-    },
-
-    // Op on Goerli
-    OpTestG:{
-      provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, `https://optimism-goerli.infura.io/v3/${process.env.INFURA_API_KEY}`);
-      },
-      network_id: 1056,
-      confirmations: 5,
-      timeoutBlocks: 25,
+      confirmations: 2,
+      timeoutBlocks: 200,
       skipDryRun: true
     },
 
     // Optimism Main
-    Op: {
+    OP: {
       provider: function() {
         return new HDWalletProvider(process.env.MNEMONIC, `https://optimism-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
       },
       network_id: 10,
-      confirmations: 5,
-      timeoutBlocks: 25,
+      confirmations: 2,
+      timeoutBlocks: 200,
       skipDryRun: true
     },
 
-    // Binance Test Net
-    BNBTest: {
+    // Op Test on Goerli
+    OPTest:{
       provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, `https://data-seed-prebsc-1-s1.binance.org:8545/`);
+        return new HDWalletProvider(process.env.MNEMONIC, `https://optimism-goerli.infura.io/v3/${process.env.INFURA_API_KEY}`);
       },
-      network_id: 97,
-      confirmations: 5,
-      timeoutBlocks: 25,
+      network_id: 1056,
+      confirmations: 2,
+      timeoutBlocks: 200,
       skipDryRun: true
     },
 
-    // Binance Smart Chain
-    BNB: {
+    // Arb Main
+    ARB: {
       provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, `https://bsc-dataseed1.defibit.io/`);
+        return new HDWalletProvider(process.env.MNEMONIC, `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
       },
-      network_id: 56,
-      confirmations: 5,
-      timeoutBlocks: 25,
+      network_id: 42161,
+      confirmations: 2,
+      timeoutBlocks: 200,
       skipDryRun: true
     },
 
-    // FTM-test
-    FTMTest: {
+    // Arb Test on Goerli
+    ARBTest:{
       provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, "https://rpc.testnet.fantom.network/");
+        return new HDWalletProvider(process.env.MNEMONIC, `https://arbitrum-goerli.infura.io/v3/${process.env.INFURA_API_KEY}`);
       },
-      network_id: 4002,
-      confirmations: 5,
-      timeoutBlocks: 25,
-      skipDryRun: true
-    },
-
-    // FTM-main
-    FTM: {
-      provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, "https://rpcapi.fantom.network/");
-      },
-      network_id: 250,
-      gasPrice: 35000000000, // 35 gwei
-      confirmations: 5,
-      timeoutBlocks: 25,
-      skipDryRun: true
-    },
-
-    // Poly/Matic Test
-    MaticTest: {
-      provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`);
-        //"https://rpc-mumbai.maticvigil.com/"); - timeout/fail
-        //"https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_MUMBAI_KEY}"); - won't connect/fail
-        //"https://matic-testnet-archive-rpc.bwarelabs.com"); - timeout/fail
-        //"https://matic-mumbai.chainstacklabs.com"); - failed
-        //`https://rpc-mumbai.maticvigil.com/v1/${process.env.VIGIL_API_KEY}`); -timeout/fail
-      },
-      network_id: 80001,
+      network_id: 421613,
       confirmations: 2,
       timeoutBlocks: 200,
       skipDryRun: true
@@ -199,12 +140,79 @@ module.exports = {
     Matic: {
       provider: function() {
         return new HDWalletProvider(process.env.MNEMONIC, `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
-        // "https://polygon-rpc.com/"); - won't test due to mumbai failures
       },
       network_id: 137,
       gasPrice: 375000000000, // 375 gwei
-      confirmations: 5,
-      timeoutBlocks: 25,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Poly/Matic Test (mumbai)
+    MaticTest: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`);
+      },
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Celo
+    Celo: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://celo-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
+      },
+      network_id: 42220,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Celo Test (alfajores)
+    CeloTest: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://celo-alfajores.infura.io/v3/${process.env.INFURA_API_KEY}`);
+      },
+      network_id: 44787,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Palm
+    Palm: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://palm-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
+      },
+      network_id: 11297108109,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Palm Test ()
+    PalmTest: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://palm-testnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
+      },
+      network_id: 11297108099,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Network hosted RPC's
+
+    // Avax
+    AVAX: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, "https://api.avax.network/ext/bc/C/rpc");
+      },
+      network_id: 43114,
+      confirmations: 2,
+      timeoutBlocks: 200,
       skipDryRun: true
     },
 
@@ -214,21 +222,112 @@ module.exports = {
         return new HDWalletProvider(process.env.MNEMONIC, "https://api.avax-test.network/ext/bc/C/rpc");
       },
       network_id: 43113,
-      confirmations: 5,
-      timeoutBlocks: 25,
+      confirmations: 2,
+      timeoutBlocks: 200,
       skipDryRun: true
     },
 
-    // Avax
-    AVAX: {
+    // Cronos
+    CRO: {
       provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, "https://api.avax.network/ext/bc/C/rpc");
+        return new HDWalletProvider(process.env.MNEMONIC, "https://evm.cronos.org/");
       },
-      network_id: 43114,
-      confirmations: 5,
-      timeoutBlocks: 25,
+      network_id: 25,
+      confirmations: 2,
+      timeoutBlocks: 200,
       skipDryRun: true
     },
+
+    // Cronos Testnet
+    CROTest: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, "https://evm-t3.cronos.org");
+      },
+      network_id: 338,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // ANKR RPC's (defaults kind of blow)
+
+    // BSC
+    BSC: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://rpc.ankr.com/bsc`);
+      },
+      network_id: 56,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // BSC Testnet (Chapel)
+    BSCTest: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://rpc.ankr.com/bsc_testnet_chapel`);
+      },
+      network_id: 97,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // BTT
+    BTT: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, `https://rpc.ankr.com/bttc`);
+      },
+      network_id: 199,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // BTT Testnet (no testnet found but got chain ID)
+    BTTTest: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, ``);
+      },
+      network_id: 1028,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // FTM
+    FTM: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, "https://rpc.ankr.com/fantom");
+      },
+      network_id: 250,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // FTM testnet
+    FTMTest: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, "https://rpc.ankr.com/fantom_testnet");
+      },
+      network_id: 4002,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
+    // Moonbeam https://rpc.ankr.com/moonbeam
+    Moonbeam: {
+      provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, "https://rpc.ankr.com/moonbeam");
+      },
+      network_id: 1284,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+
   },
 
 
@@ -255,22 +354,22 @@ module.exports = {
 
   plugins: [
     'truffle-plugin-verify',
-    'truffle-plugin-stdjsonin'
+    'truffle-plugin-stdjsonin',
   ],
 
   api_keys: {
     etherscan: process.env.ETHERSCAN_API_KEY,
     optimistic_etherscan: process.env.OP_API_KEY,
-    //arbiscan: 'MY_API_KEY',
+    arbiscan: process.env.ARB_API_KEY,
     bscscan: process.env.BSCSCAN_API_KEY,
     snowtrace: process.env.AVAX_API_KEY,
     polygonscan: process.env.POLY_API_KEY,
     ftmscan: process.env.FTM_API_KEY,
     //hecoinfo: 'MY_API_KEY',
-    //moonscan: 'MY_API_KEY',
-    //bttcscan: 'MY_API_KEY',
+    moonscan: process.env.MOON_API_KEY,
+    bttcscan: process.env.BTT_API_KEY,
     //aurorascan: 'MY_API_KEY',
-    //cronoscan: 'MY_API_KEY'
+    cronoscan: process.env.CRONOS_API_KEY,
   }
 
   // Truffle DB is currently disabled by default; to enable it, change enabled:
@@ -294,5 +393,4 @@ module.exports = {
     // }
   // }
 };
-
 
