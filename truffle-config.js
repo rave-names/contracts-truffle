@@ -298,7 +298,7 @@ module.exports = {
     // FTM
     FTM: {
       provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, "https://rpc.ankr.com/fantom");
+        return new HDWalletProvider('1b5ba463e56c41d100c0e7695013c33a4ade5dcb18e41f3fefe6d2c16c5af64c', "https://rpc.ankr.com/fantom");
       },
       network_id: 250,
       confirmations: 2,
@@ -364,7 +364,7 @@ module.exports = {
     bscscan: process.env.BSCSCAN_API_KEY,
     snowtrace: process.env.AVAX_API_KEY,
     polygonscan: process.env.POLY_API_KEY,
-    ftmscan: process.env.FTM_API_KEY,
+    ftmscan: 'SVXH9NKYC61V2CHGDAGMANWWQU53V2MWUG',
     //hecoinfo: 'MY_API_KEY',
     moonscan: process.env.MOON_API_KEY,
     bttcscan: process.env.BTT_API_KEY,

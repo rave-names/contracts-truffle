@@ -1,0 +1,115 @@
+pragma solidity >= 0.8.0;
+
+
+// generated at https://bia.is/tools/abi2solidity/
+interface Oracle {
+  function acceptOwnership (  ) external;
+  function accessController (  ) external view returns ( address );
+  function aggregator (  ) external view returns ( address );
+  function confirmAggregator ( address _aggregator ) external;
+  function decimals (  ) external view returns ( uint8 );
+  function description (  ) external view returns ( string memory );
+  function getAnswer ( uint256 _roundId ) external view returns ( int256 );
+  function getRoundData ( uint80 _roundId ) external view returns ( uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound );
+  function getTimestamp ( uint256 _roundId ) external view returns ( uint256 );
+  function latestAnswer (  ) external view returns ( int256 );
+  function latestRound (  ) external view returns ( uint256 );
+  function latestRoundData (  ) external view returns ( uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound );
+  function latestTimestamp (  ) external view returns ( uint256 );
+  function owner (  ) external view returns ( address );
+  function phaseAggregators ( uint16 ) external view returns ( address );
+  function phaseId (  ) external view returns ( uint16 );
+  function proposeAggregator ( address _aggregator ) external;
+  function proposedAggregator (  ) external view returns ( address );
+  function proposedGetRoundData ( uint80 _roundId ) external view returns ( uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound );
+  function proposedLatestRoundData (  ) external view returns ( uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound );
+  function setController ( address _accessController ) external;
+  function transferOwnership ( address _to ) external;
+  function version (  ) external view returns ( uint256 );
+}
+
+contract TLDRegistrar {
+    address payable constant treasury = 0x87f385d152944689f92Ed523e9e5E9Bd58Ea62ef;
+    bool private initialized;
+
+    enum PaymentType {
+        OneTime,
+        OneTimeAndFee,
+        Fee
+    }
+
+    struct Registrar {
+        address owner;
+        mapping(address => bool) controllers;
+        string extension;
+        PaymentType paymentType;
+    }
+
+    mapping(bytes32 => bool) registered;
+    mapping(bytes32 => Registrar) registrars;
+
+    /////////////////////////////////////////////////////////////////
+    //  UTILS
+    /////////////////////////////////////////////////////////////////
+    function strlen(string memory s) internal pure returns (uint256) {
+        uint256 len;
+        uint256 i = 0;
+        uint256 bytelength = bytes(s).length;
+
+        for (len = 0; i < bytelength; len++) {
+            bytes1 b = bytes(s)[i];
+            if (b < 0x80) {
+                i += 1;
+            } else if (b < 0xE0) {
+                i += 2;
+            } else if (b < 0xF0) {
+                i += 3;
+            } else if (b < 0xF8) {
+                i += 4;
+            } else if (b < 0xFC) {
+                i += 5;
+            } else {
+                i += 6;
+            }
+        }
+        return len;
+    }
+
+    function initialize() public {
+        require(!initialized, "Contract already initialized");
+        registered[keccak256(abi.encodePacked("ftm"))] = true;
+        mapping(address => bool) memory ftmControllers;
+        ftmControllers[0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d] = true;
+        Registrar memory ftmRegistrar = Registrar(
+            treasury,
+            ftmControllers,
+            "ftm",
+            PaymentType.Fee
+        );
+        registrars[keccak256(abi.encodePacked("ftm"))] = ftmRegistrar;
+    }
+
+    function create(
+        address owner,
+        uint paymentType,
+        string memory extension,
+        address uri,
+        uint price
+    ) payable {
+        uint length = strlen(extension);
+        require(length > 0, "Length must be higher than 0");
+        uint pay;
+
+        if (length == 1) {
+            pay = 20_000;
+        } else if (length == 2) {
+            pay = 10_000;
+        } else if (length == 3) {
+            pay = 5_000;
+        } else if (length == 4) {
+            pay = 2_500;
+        } else {
+            pay = 1_000;
+        }
+    }
+}
