@@ -1,44 +1,28 @@
-# Truffle-Enviroment
-### Setup by @MaxflowO2
-### Requirements
-* nodejs and npm
-```
-sudo apt install nodejs npm -y
-```
-* npm dependacies
-```
-npm install
-```
-* setup .env
-```
-MNEMONIC = "12 word/private key"
-INFURA_API_KEY = 
-ETHERSCAN_API_KEY = 
-BSCSCAN_API_KEY = 
-FTM_API_KEY = 
-POLY_API_KEY = 
-AVAX_API_KEY = 
-```
-Contracts need to remain in ./contracts
-```truffle deploy --network (network)``` command for deploying contracts
-```truffle run verify (Contract name) --network (network)`` command for sending verified code to scans site (Binance or Etherium)
+# Rave Contracts
 
-Networks configured:
-* Developer (127.0.0.1)
-* Ethereum
-* Optimism
-* Arbitum
-* Polygon
-* Binance Smart Chain
-* Binance Test Net
-* Avalanche
-* Avalanche (Fuji, testnet)
-* Fantom
-* Fantom Testnet
+### Install
+```sh
+git clone https://github.com/rave-names/contracts
+cd contracts
+npm install -D
+```
 
-Boiler plate setup... do not delete Migrations.sol or 1_initial_migration.js
+### Lint
+```sh
+npm run lint
+```
 
-Current as of 01 Dec 2022
+### Prettify
+```sh
+npm run prettier
+```
 
-Pending updates:
-* More chains configured
+### Compile
+```sh
+npm run compile
+```
+
+### Verify
+```sh
+npx truffle run verify CONTRACT_NAME@CONTRACT_ADDRESS
+```
