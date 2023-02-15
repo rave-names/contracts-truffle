@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./string.sol";
+import "../Other/string.sol";
 import {FantomsArtNameSystem as RaveV1} from "./Rave.sol";
 import {RaveURIGenerator as URI} from "./RaveURIGenerator.sol";
 
@@ -14,13 +14,14 @@ interface wFTM is IERC20 {
     function deposit() external payable returns (uint256);
 }
 
-contract RaveTombheads is ERC721, ERC721Enumerable, Ownable {
+contract Rave is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     using strings for *;
 
     uint public price;
     string public extension;
     Counters.Counter private _tokenIdCounter;
+    address public treasury = 0x87f385d152944689f92Ed523e9e5E9Bd58Ea62ef;
     wFTM private wftm = wFTM(0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83);
     address public uri;
 
@@ -48,7 +49,7 @@ contract RaveTombheads is ERC721, ERC721Enumerable, Ownable {
     )
         ERC721(
             string.concat(
-                string.concat("Tombheads .", _extension),
+                string.concat("Rave Names .", _extension),
                 " registry"
             ),
             string.concat(".", _extension)
@@ -57,7 +58,6 @@ contract RaveTombheads is ERC721, ERC721Enumerable, Ownable {
         price = _price;
         extension = _extension;
         uri = _uri;
-        _transferOwnership(0x3979BC1e841B1a6a5C06e602995C000b4e693868);
     }
 
     // @notice Makes a keccak256 hash of a string
@@ -88,10 +88,10 @@ contract RaveTombheads is ERC721, ERC721Enumerable, Ownable {
 
     // @notice Register a name
     // @param name to register
-    function registerName(string memory _name) public payable onlyOwner {
+    function registerName(string memory _name) public payable {
         require(msg.value >= price, "Rave: You must pay the full price.");
         wftm.deposit{value: msg.value}();
-        wftm.transfer(owner(), wftm.balanceOf(address(this)));
+        wftm.transfer(treasury, wftm.balanceOf(address(this)));
         string memory name = _lower(
             string.concat(string.concat(_name, "."), extension)
         );
@@ -131,10 +131,10 @@ contract RaveTombheads is ERC721, ERC721Enumerable, Ownable {
     function registerNameAndSend(
         string memory _name,
         address sendTo
-    ) public payable onlyOwner {
+    ) public payable {
         require(msg.value >= price, "Rave: You must pay the full price.");
         wftm.deposit{value: msg.value}();
-        wftm.transfer(owner(), wftm.balanceOf(address(this)));
+        wftm.transfer(treasury, wftm.balanceOf(address(this)));
         string memory name = _lower(
             string.concat(string.concat(_name, "."), extension)
         );

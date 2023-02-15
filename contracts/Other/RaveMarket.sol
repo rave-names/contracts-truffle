@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./Rave.sol";
+import "../Core/Rave.sol";
 
 library StringManipulation {
     function _upper(bytes1 _b1) private pure returns (bytes1) {

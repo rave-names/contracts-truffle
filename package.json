@@ -2,7 +2,7 @@
   "scripts": {
     "prettier": "prettier --write contracts/**/*.sol",
     "lint": "prettier --list-different contracts/**/*.sol",
-    "compile": "truffle compile",
+    "compile": "npx truffle compile",
     "test": ""
   },
   "devDependencies": {

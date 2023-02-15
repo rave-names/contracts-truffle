@@ -2,7 +2,7 @@ pragma solidity >=0.8.0;
 pragma experimental ABIEncoderV2;
 //SPDX-License-Identifier: UNLICENSED
 
-import {StringUtils as Strings} from "./Strings.sol";
+import {StringUtils as Strings} from "../Other/Strings.sol";
 
 interface IRaveBase {
     function getNameFromOwner(
