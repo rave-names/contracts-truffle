@@ -2,7 +2,8 @@
   "scripts": {
     "prettier": "prettier --write contracts/**/*.sol",
     "lint": "prettier --list-different contracts/**/*.sol",
-    "compile": "truffle compile"
+    "compile": "truffle compile",
+    "test": ""
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.8.1",
