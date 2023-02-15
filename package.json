@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.8.1",
-    "@openzeppelin/contracts-upgradeable": "^4.7.3",
+    "@openzeppelin/contracts-upgradeable": "^4.8.1",
     "@openzeppelin/truffle-upgrades": "^1.17.0",
     "@truffle/hdwallet-provider": "^2.1.1",
     "chai": "^4.3.6",
