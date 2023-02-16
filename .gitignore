@@ -3,3 +3,4 @@ truffle-config.js
 build/**/*
 *.env*
 /contracts/**/*.esol
+package-lock.json

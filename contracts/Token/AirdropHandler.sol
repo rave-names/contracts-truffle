@@ -76,10 +76,7 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
 
         // Verify the merkle proof.
         bytes32 node = keccak256(abi.encodePacked(account, amount));
-        require(
-            MerkleProof.verify(merkleProof, merkleRoot, node),
-            "Invalid proof."
-        );
+        require(MerkleProof.verify(merkleProof, root, node), "Invalid proof.");
 
         require(!claimed[account], "Already claimed.");
 
@@ -109,7 +106,7 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
     }
 
     function migrateTarotPool(address newPool) external onlyOwner {
-        oldPool = poolToken;
+        address oldPool = poolToken;
         poolToken = newPool;
 
         router.redeemETH(
@@ -117,7 +114,7 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
             ERC20(oldPool).balanceOf(address(this)),
             address(this),
             block.timestamp,
-            bytes(0)
+            bytes("")
         );
 
         _update();
