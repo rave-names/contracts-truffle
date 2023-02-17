@@ -1,10 +1,11 @@
 pragma solidity >=0.8.0;
 
-// import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"; we inherit this from ERC721Enumerable
+//import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable as Ownable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {ERC721EnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import {NumberUtils} from "../Other/NumberUtilities.sol";
 
 interface TarotRouter {
     function mintETH(
@@ -22,13 +23,23 @@ interface TarotRouter {
     ) external returns (uint256 amountETH);
 }
 
-contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
+interface IBorrowable is IERC20 {
+    function exchangeRate() external returns (uint256);
+}
+
+contract AirdropHandler is Ownable {
     ERC20 rave;
     uint amount;
     bytes32 root;
+    address constant treasury = 0x87f385d152944689f92Ed523e9e5E9Bd58Ea62ef;
+
+    uint factor = 10;
+
+    using NumberUtils for uint256;
 
     address poolToken;
     TarotRouter router;
+    uint totalLocked = 0;
 
     event StartLock(address indexed account, uint amount);
     event PoolMigration(address oldPool, address indexed newPool);
@@ -37,6 +48,7 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
         uint unlockTime;
         uint amount;
         uint ftmUnlockTime;
+        bool active;
     }
 
     mapping(address claimer => Lock lock) locks;
@@ -46,14 +58,15 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
         address _rave,
         uint _amount,
         bytes32 _root,
-        address tarotRouter
+        address tarotRouter,
+        address _poolToken
     ) public initializer {
         __Ownable_init_unchained();
-        __ERC721Enumerable_init_unchained();
         rave = ERC20(_rave);
         amount = _amount;
         root = _root;
         router = TarotRouter(tarotRouter);
+        poolToken = _poolToken;
     }
 
     function startLock(
@@ -85,10 +98,12 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
         locks[account] = Lock({
             unlockTime: block.timestamp + 208 weeks,
             amount: amount,
-            ftmUnlockTime: block.timestamp + 104 weeks
+            ftmUnlockTime: block.timestamp + 104 weeks,
+            active: true
         });
 
         _update();
+        totalLocked += 1;
 
         emit StartLock(account, amount);
     }
@@ -97,7 +112,7 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
         uint balance = address(this).balance;
 
         if (balance > 0) {
-            router.mintETH(
+            uint sharesAdded = router.mintETH(
                 poolToken,
                 address(this),
                 block.timestamp // should complete this block
@@ -111,7 +126,7 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
 
         router.redeemETH(
             oldPool,
-            ERC20(oldPool).balanceOf(address(this)),
+            IBorrowable(oldPool).balanceOf(address(this)),
             address(this),
             block.timestamp,
             bytes("")
@@ -120,5 +135,66 @@ contract AirdropHandler is Ownable, ERC721EnumerableUpgradeable {
         _update();
 
         emit PoolMigration(oldPool, newPool);
+    }
+
+    function claimFTM() public {
+        address account = msg.sender;
+
+        require(
+            block.timestamp >= locks[account].ftmUnlockTime ||
+                msg.sender == owner(),
+            "You cannot claim your FTM yet."
+        );
+
+        uint rate = IBorrowable(poolToken).exchangeRate();
+
+        uint ftm = router.redeemETH(
+            poolToken,
+            (10 * 10 ** 18) * (rate / 10 ** 18),
+            address(this),
+            block.timestamp,
+            bytes("")
+        );
+
+        (bool success, ) = account.call{value: 10}("");
+        (bool successTreasury, ) = treasury.call{value: ftm - 10}("");
+
+        require(success && successTreasury, "Transfer failed.");
+    }
+
+    function claimFees() external {
+        uint rate = IBorrowable(poolToken).exchangeRate();
+        uint depositedFTM = totalLocked * 10;
+        uint balance = IBorrowable(poolToken).balanceOf(address(this));
+
+        uint depositedAsShares = depositedFTM * rate;
+        uint fees = balance - depositedAsShares;
+
+        router.redeemETH(poolToken, fees, treasury, block.timestamp, bytes(""));
+    }
+
+    function claimRAVE() external {
+        address account = msg.sender;
+
+        require(
+            block.timestamp >= locks[account].unlockTime ||
+                msg.sender == owner(),
+            "You cannot claim your RAVE yet."
+        );
+        require(locks[account].active, "This lock is inactive.");
+
+        claimFTM();
+
+        rave.transferFrom(
+            address(this),
+            account,
+            locks[account].amount.toDecimals(18) / factor
+        );
+
+        locks[account].active = false;
+    }
+
+    function lock(address owner) external view returns (Lock memory, bool) {
+        return (locks[owner], claimed[owner]);
     }
 }
