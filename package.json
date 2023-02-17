@@ -2,8 +2,9 @@
   "scripts": {
     "prettier": "prettier --write contracts/**/*.sol",
     "lint": "prettier --list-different contracts/**/*.sol",
-    "compile": "npx truffle compile",
-    "test": ""
+    "compile:dry": "npx truffle compile",
+    "compile": "npm run prettier && npm run compile:dry",
+    "test": "npm run lint && npm run compile:dry"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.8.1",
