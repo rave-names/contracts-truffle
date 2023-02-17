@@ -5,12 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-
-library NumberUtils {
-    function toDecimals(uint input) internal pure returns (uint) {
-        return (input * (10 ** 18));
-    }
-}
+import "../Other/NumberUtilities.sol";
 
 contract RAVE is ERC20, ERC20Snapshot, Ownable {
     using NumberUtils for uint256;
@@ -30,7 +25,7 @@ contract RAVE is ERC20, ERC20Snapshot, Ownable {
     }
 
     function _mintDecimals(address account, uint256 amount) internal virtual {
-        _mint(account, amount.toDecimals());
+        _mint(account, amount.toDecimals(18));
     }
 
     function mint(uint amount) external onlyAdmin {
@@ -42,7 +37,7 @@ contract RAVE is ERC20, ERC20Snapshot, Ownable {
         uint256 amount
     ) internal virtual override(ERC20) {
         require(
-            ERC20.totalSupply() + amount <= uint(100_000_000).toDecimals(),
+            ERC20.totalSupply() + amount <= uint(100_000_000).toDecimals(18),
             "ERC20Capped: cap exceeded"
         );
         super._mint(account, amount);
@@ -99,7 +94,7 @@ contract RAVE is ERC20, ERC20Snapshot, Ownable {
         require(!claimed[account], "Already claimed.");
 
         claimed[account] = true;
-        _transfer(address(this), account, amount.toDecimals());
+        _transfer(address(this), account, amount.toDecimals(18));
 
         emit Claimed(account, amount);
     }
