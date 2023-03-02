@@ -1,6 +1,6 @@
 pragma solidity >=0.8.0;
 
-//import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+// import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable as Ownable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -32,8 +32,9 @@ contract AirdropHandler is Ownable {
     uint amount;
     bytes32 root;
     address constant treasury = 0x87f385d152944689f92Ed523e9e5E9Bd58Ea62ef;
+    uint claimLimit;
 
-    uint factor = 10;
+    uint factor = uint(95) / uint(100);
 
     using NumberUtils for uint256;
 
@@ -67,28 +68,28 @@ contract AirdropHandler is Ownable {
         root = _root;
         router = TarotRouter(tarotRouter);
         poolToken = _poolToken;
+        claimLimit = block.timestamp + 2.5 weeks;
+    }
+
+    function clamp(uint a, uint n, uint x) internal pure returns (uint) {
+        return (a < n) ? n : (a > x) ? x : a;
     }
 
     function startLock(
-        uint256 amount,
+        uint256 _amount,
         bytes32[] calldata merkleProof
     ) public payable {
         address account = msg.sender;
+
+        require(block.timestamp < claimLimit, "You are too late lmfao");
 
         require(
             msg.value >= 10,
             "You need to lock 10 FTM to start an airdrop lock"
         );
 
-        if (msg.sender != owner()) {
-            // 14th feb 2023
-            require(block.timestamp > 1676329200, "Airdrop hasn't opened yet.");
-            // 28th feb 2023
-            require(block.timestamp < 1677538800, "Airdrop has closed.");
-        }
-
         // Verify the merkle proof.
-        bytes32 node = keccak256(abi.encodePacked(account, amount));
+        bytes32 node = keccak256(abi.encodePacked(account, _amount));
         require(MerkleProof.verify(merkleProof, root, node), "Invalid proof.");
 
         require(!claimed[account], "Already claimed.");
@@ -97,7 +98,7 @@ contract AirdropHandler is Ownable {
 
         locks[account] = Lock({
             unlockTime: block.timestamp + 208 weeks,
-            amount: amount,
+            amount: clamp(_amount, 0, 200_000),
             ftmUnlockTime: block.timestamp + 104 weeks,
             active: true
         });
@@ -107,6 +108,11 @@ contract AirdropHandler is Ownable {
 
         emit StartLock(account, amount);
     }
+
+    function startLockWithFTMMatching(
+        uint256 amount,
+        bytes32[] calldata merkleProof
+    ) external payable {}
 
     function _update() internal {
         uint balance = address(this).balance;
@@ -188,7 +194,7 @@ contract AirdropHandler is Ownable {
         rave.transferFrom(
             address(this),
             account,
-            locks[account].amount.toDecimals(18) / factor
+            locks[account].amount.toDecimals(18) * factor
         );
 
         locks[account].active = false;
