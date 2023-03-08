@@ -6,6 +6,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {NumberUtils} from "../Other/NumberUtilities.sol";
+import {Router} from "../Other/solidlyrouter.sol";
 
 interface TarotRouter {
     function mintETH(
@@ -50,6 +51,9 @@ contract AirdropHandler is Ownable {
         uint amount;
         uint ftmUnlockTime;
         bool active;
+        bool ftmMatched;
+        uint lpDeposited;
+        address lockerAddress;
     }
 
     mapping(address claimer => Lock lock) locks;
@@ -100,7 +104,10 @@ contract AirdropHandler is Ownable {
             unlockTime: block.timestamp + 208 weeks,
             amount: clamp(_amount, 0, 200_000),
             ftmUnlockTime: block.timestamp + 104 weeks,
-            active: true
+            active: true,
+            ftmMatched: false,
+            lpDeposited: 0,
+            lockerAddress: address(0)
         });
 
         _update();
@@ -188,6 +195,7 @@ contract AirdropHandler is Ownable {
             "You cannot claim your RAVE yet."
         );
         require(locks[account].active, "This lock is inactive.");
+        require(!locks[account].ftmMatched, "You have matched with FTM, please use the correct claim function.");
 
         claimFTM();
 
