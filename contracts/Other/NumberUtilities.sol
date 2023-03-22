@@ -9,4 +9,8 @@ library NumberUtils {
     ) internal pure returns (uint) {
         return (input * (10 ** decimals));
     }
+
+    function clamp(uint self, uint min, uint max) internal pure returns (uint) {
+        return (self < min) ? min : (self > max) ? max : self;
+    }
 }

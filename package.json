@@ -3,6 +3,7 @@
     "prettier": "prettier --write contracts/**/*.sol",
     "lint": "prettier --list-different contracts/**/*.sol",
     "compile:dry": "npx truffle compile",
+    "compile:quiet": "npm run prettier && npm run compile:dry -- --quiet",
     "compile": "npm run prettier && npm run compile:dry",
     "test": "npm run lint && npm run compile:dry"
   },
@@ -17,6 +18,7 @@
     "prettier-plugin-solidity": "^1.1.1",
     "truffle": "^5.6.4",
     "truffle-plugin-stdjsonin": "github:mhrsalehi/truffle-plugin-stdjsonin",
-    "truffle-plugin-verify": "^0.5.33"
+    "truffle-plugin-verify": "^0.5.33",
+    "@chainlink/contracts": "^0.6.1"
   }
 }
