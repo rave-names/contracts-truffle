@@ -6,7 +6,6 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {NumberUtils} from "../Other/NumberUtilities.sol";
-import {Router} from "../Other/solidlyrouter.sol";
 
 interface TarotRouter {
     function mintETH(
@@ -51,9 +50,6 @@ contract AirdropHandler is Ownable {
         uint amount;
         uint ftmUnlockTime;
         bool active;
-        bool ftmMatched;
-        uint lpDeposited;
-        address lockerAddress;
     }
 
     mapping(address claimer => Lock lock) locks;
@@ -73,10 +69,6 @@ contract AirdropHandler is Ownable {
         router = TarotRouter(tarotRouter);
         poolToken = _poolToken;
         claimLimit = block.timestamp + 2.5 weeks;
-    }
-
-    function clamp(uint a, uint n, uint x) internal pure returns (uint) {
-        return (a < n) ? n : (a > x) ? x : a;
     }
 
     function startLock(
@@ -102,12 +94,9 @@ contract AirdropHandler is Ownable {
 
         locks[account] = Lock({
             unlockTime: block.timestamp + 208 weeks,
-            amount: clamp(_amount, 0, 200_000),
+            amount: _amount.clamp(0, 200_000),
             ftmUnlockTime: block.timestamp + 104 weeks,
-            active: true,
-            ftmMatched: false,
-            lpDeposited: 0,
-            lockerAddress: address(0)
+            active: true
         });
 
         _update();
@@ -115,11 +104,6 @@ contract AirdropHandler is Ownable {
 
         emit StartLock(account, amount);
     }
-
-    function startLockWithFTMMatching(
-        uint256 amount,
-        bytes32[] calldata merkleProof
-    ) external payable {}
 
     function _update() internal {
         uint balance = address(this).balance;
@@ -195,7 +179,6 @@ contract AirdropHandler is Ownable {
             "You cannot claim your RAVE yet."
         );
         require(locks[account].active, "This lock is inactive.");
-        require(!locks[account].ftmMatched, "You have matched with FTM, please use the correct claim function.");
 
         claimFTM();
 
